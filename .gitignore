@@ -1,4 +1,4 @@
+.idea/
 *.pyc
 build/
-dist/
 SequentialDownload.egg-info/
