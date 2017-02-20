@@ -59,6 +59,7 @@ def state_changed_handler(tid, *arg):
         if info is None or handle is None:
             return
         log.info("set_sequential_download to %s", info.name())
+        handle.set_sequential_download(True)
 
 
 def set_seq(flag):
