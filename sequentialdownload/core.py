@@ -1,3 +1,4 @@
+import time
 from deluge.log import LOG as log
 from deluge.plugins.pluginbase import CorePluginBase
 import deluge.component as component
@@ -7,9 +8,7 @@ from twisted.internet import reactor
 from twisted.internet.task import LoopingCall, deferLater
 
 DEFAULT_PREFS = {
-    "test": "NiNiNi"
 }
-
 
 class Core(CorePluginBase):
     def enable(self):
@@ -18,11 +17,11 @@ class Core(CorePluginBase):
         self.events = [("TorrentStateChangedEvent", state_changed_handler)]
 
         deferLater(reactor, 4, self.register)
-        deferLater(reactor, 5, set_seq, True)
+        deferLater(reactor, 5, seq_all, True)
 
     def disable(self):
         deferLater(reactor, 0, self.deregister)
-        deferLater(reactor, 1, set_seq, False)
+        deferLater(reactor, 1, seq_all, False)
 
     def update(self):
         pass
@@ -49,20 +48,21 @@ class Core(CorePluginBase):
         for arg in self.events:
             em.deregister_event_handler(*arg)
 
-
 def state_changed_handler(tid, *arg):
     state = arg[0]
     if state == 'Downloading':
         tor = component.get("TorrentManager").torrents[tid]
-        info = tor.torrent_info
-        handle = tor.handle
-        if info is None or handle is None:
-            return
-        log.info("set_sequential_download to %s", info.name())
-        handle.set_sequential_download(True)
+        set_seq_t1(tor, True)
 
+def set_seq_t1(tor, flag):
+    info = tor.torrent_info
+    handle = tor.handle
+    if info and handle:
+        log.info("Setting sequential_download:%s for %s", flag, info.name())
+        handle.set_sequential_download(flag)
+    else:
+        deferLater(reactor, 3, set_seq_t1, tor, flag)
 
-def set_seq(flag):
-    log.info("Called set_seq(%s)" % flag)
+def seq_all(flag):
     for tor in component.get("TorrentManager").torrents.values():
-        tor.handle.set_sequential_download(flag)
+        set_seq_t1(tor, flag)

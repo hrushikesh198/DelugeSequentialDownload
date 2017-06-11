@@ -12,8 +12,7 @@ from common import get_resource
 class GtkUI(GtkPluginBase):
     def enable(self):
         self.glade = gtk.glade.XML(get_resource("config.glade"))
-
-        component.get("Preferences").add_page("SequentialDownload", self.glade.get_widget("prefs_box"))
+        component.get("Preferences").add_page("SequentialDownload", self.glade.get_widget("enabledMsg"))
         component.get("PluginManager").register_hook("on_apply_prefs", self.on_apply_prefs)
         component.get("PluginManager").register_hook("on_show_prefs", self.on_show_prefs)
 
@@ -24,9 +23,7 @@ class GtkUI(GtkPluginBase):
 
     def on_apply_prefs(self):
         log.debug("applying prefs for SequentialDownload")
-        config = {
-            "test": self.glade.get_widget("txt_test").get_text()
-        }
+        config = {}
         client.sequentialdownload.set_config(config)
 
     def on_show_prefs(self):
@@ -34,4 +31,4 @@ class GtkUI(GtkPluginBase):
 
     def cb_get_config(self, config):
         "callback for on show_prefs"
-        self.glade.get_widget("txt_test").set_text(config["test"])
+        pass
