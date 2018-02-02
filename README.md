@@ -1,5 +1,6 @@
+
 # DelugeSequentialDownload
-Deluge Sequential Download Plugin.
+[Not maintained any more] Deluge Sequential Download Plugin.
 
 *Do seed after downloding. It is unsocial to just download and go away.*
 
